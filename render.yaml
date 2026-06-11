@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: englishsentence-ocr
+    runtime: node
+    rootDir: ocr-server
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_VERSION
+        value: 22.14.0
+      - key: ALLOWED_ORIGIN
+        value: "*"

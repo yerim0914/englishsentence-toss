@@ -1,4 +1,4 @@
-export type SentenceSourceType = 'manual' | 'text';
+export type SentenceSourceType = 'manual' | 'text' | 'image';
 
 export interface SentenceItem {
   id: string;
@@ -66,6 +66,46 @@ export function createSentence(
     sourceType,
     createdAt: new Date().toISOString(),
   };
+}
+
+export async function recognizeEnglishText(imageDataUri: string): Promise<string> {
+  const baseUrl = import.meta.env.VITE_API_BASE_URL;
+  if (!baseUrl) {
+    throw new Error('OCR 기능은 서버 연결 후 사용할 수 있어요. 지금은 인식된 문장을 아래 칸에 붙여넣어 주세요.');
+  }
+
+  const response = await fetch(`${String(baseUrl).replace(/\/$/, '')}/api/ocr/english`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ imageDataUri }),
+  });
+
+  if (!response.ok) {
+    throw new Error('이미지 인식에 실패했습니다.');
+  }
+
+  const result = (await response.json()) as { text?: string };
+  return result.text ?? '';
+}
+
+export async function translateEnglishToKorean(texts: string[]): Promise<Record<string, string>> {
+  const baseUrl = import.meta.env.VITE_API_BASE_URL;
+  if (!baseUrl) {
+    throw new Error('번역 기능은 서버 연결 후 사용할 수 있어요.');
+  }
+
+  const response = await fetch(`${String(baseUrl).replace(/\/$/, '')}/api/translate/en-ko`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ texts }),
+  });
+
+  if (!response.ok) {
+    throw new Error('한국어 뜻 자동 채우기에 실패했습니다.');
+  }
+
+  const result = (await response.json()) as { translations?: Array<{ source: string; text: string }> };
+  return Object.fromEntries((result.translations ?? []).map((item) => [item.source, item.text]));
 }
 
 function cleanCandidate(value: string): string {

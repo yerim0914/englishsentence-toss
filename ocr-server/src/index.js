@@ -5,6 +5,8 @@ import { createWorker } from 'tesseract.js';
 const app = express();
 const port = Number(process.env.PORT ?? 8787);
 const allowedOrigin = process.env.ALLOWED_ORIGIN ?? '*';
+const brandIconUrl = 'https://raw.githubusercontent.com/yerim0914/englishsentence-toss/main/assets/launch/app-logo-600.png';
+
 
 app.use(cors({ origin: allowedOrigin }));
 app.use(express.json({ limit: '12mb' }));
@@ -13,6 +15,18 @@ let workerPromise;
 
 app.get('/health', (_request, response) => {
   response.json({ ok: true });
+});
+
+app.get('/assets/app-logo-600.png', async (_request, response) => {
+  const iconResponse = await fetch(brandIconUrl);
+
+  if (!iconResponse.ok) {
+    response.status(502).json({ error: 'Brand icon is unavailable.' });
+    return;
+  }
+
+  const iconBuffer = Buffer.from(await iconResponse.arrayBuffer());
+  response.type('png').set('Cache-Control', 'public, max-age=86400').send(iconBuffer);
 });
 
 app.post('/api/ocr/english', async (request, response) => {

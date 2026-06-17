@@ -1,11 +1,11 @@
 import { defineConfig } from '@apps-in-toss/web-framework/config';
 
 export default defineConfig({
-  appName: 'english-sentence',
+  appName: 'englishsentence',
   brand: {
-    displayName: '영어 문장 암기',
+    displayName: '영어문장암기',
     primaryColor: '#3182f6',
-    icon: '',
+    icon: 'https://englishsentence-toss.onrender.com/assets/app-logo-600.png',
   },
   web: {
     host: 'localhost',

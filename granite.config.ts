@@ -5,7 +5,7 @@ export default defineConfig({
   brand: {
     displayName: '영어문장암기',
     primaryColor: '#3182f6',
-    icon: 'https://englishsentence-toss.onrender.com/assets/app-logo-600.png',
+    icon: 'https://static.toss.im/appsintoss/49053/a9b07376-b7e2-40a8-a70d-e644bb31d1e7.png',
   },
   web: {
     host: 'localhost',

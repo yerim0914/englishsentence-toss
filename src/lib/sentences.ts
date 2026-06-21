@@ -110,14 +110,19 @@ export async function translateEnglishToKorean(texts: string[]): Promise<Record<
 
 function cleanCandidate(value: string): string {
   let sentence = value.trim();
+  sentence = sentence.replace(/[^\x20-\x7E]/g, ' ');
   sentence = sentence.replace(/^[A-Z]\s+\d+\s*/, '');
   sentence = sentence.replace(/^\d+\s*/, '');
+  sentence = sentence.replace(/[^A-Za-z0-9.,!?;:'"()\-\s]/g, ' ');
+  sentence = sentence.replace(/(^|\s)\d+(?:[.,:/-]\d+)*(?=\s|$)/g, ' ');
   sentence = sentence.replace(/\s+/g, ' ').trim();
 
   const firstEnglish = sentence.search(/[A-Za-z]/);
   if (firstEnglish >= 0) {
     sentence = sentence.slice(firstEnglish).trim();
   }
+
+  sentence = sentence.replace(/[^A-Za-z.!?'\")]+$/g, '').trim();
 
   return sentence;
 }
@@ -130,6 +135,22 @@ function isValid(sentence: string): boolean {
     return false;
   }
 
-  const words = sentence.match(/[A-Za-z]+(?:'[A-Za-z]+)?/g);
-  return (words?.length ?? 0) >= 3;
+  const letters = sentence.match(/[A-Za-z]/g)?.length ?? 0;
+  const digits = sentence.match(/\d/g)?.length ?? 0;
+  if (digits > 0 && digits / Math.max(letters, 1) > 0.2) {
+    return false;
+  }
+
+  const words = sentence.match(/[A-Za-z]+(?:'[A-Za-z]+)?/g) ?? [];
+  if (words.length < 3) {
+    return false;
+  }
+
+  const plausibleWords = words.filter((word) => {
+    const normalized = word.toLowerCase();
+    return normalized === 'a' || normalized === 'i' || (normalized.length >= 2 && /[aeiouy]/.test(normalized));
+  });
+  const suspiciousSingleLetters = words.filter((word) => word.length === 1 && !/^[aAiI]$/.test(word));
+
+  return plausibleWords.length / words.length >= 0.65 && suspiciousSingleLetters.length <= 1;
 }

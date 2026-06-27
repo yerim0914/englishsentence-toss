@@ -11,7 +11,7 @@ services:
       - key: NODE_VERSION
         value: 22.14.0
       - key: ALLOWED_ORIGIN
-        value: https://englishsentence-toss.onrender.com
+        value: "*"
       - key: APP_TIME_ZONE
         value: Asia/Seoul
       - key: DATA_DIR
@@ -24,4 +24,4 @@ services:
     staticPublishPath: dist
     envVars:
       - key: VITE_API_BASE_URL
-        value: https://englishsentence-toss-api.onrender.com
+        value: https://englishsentence-toss-api-6t64.onrender.com

@@ -2,6 +2,7 @@ services:
   - type: web
     name: englishsentence-toss-api
     runtime: node
+    plan: free
     rootDir: ocr-server
     buildCommand: npm install
     startCommand: npm start

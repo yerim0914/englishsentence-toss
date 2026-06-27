@@ -66,7 +66,7 @@ interface PostFormState {
 }
 
 const apiBaseUrl = (import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8787').replace(/\/$/, '');
-const freeCategories = ['질문', '자료공유', '후기', '잡담'];
+const freeCategories = ['질문', '자료공유', '전화영어 후기', '학원 후기', '잡담'];
 const meetupCategories = ['회화모임', '스터디', '과외', '언어교환'];
 const emptyForm: PostFormState = {
   category: '질문',
@@ -184,6 +184,7 @@ function HomeView({
 }) {
   const latestFree = posts.filter((post) => post.boardType === 'free').slice(0, 3);
   const latestMeetup = posts.filter((post) => post.boardType === 'meetup').slice(0, 3);
+  const phoneEnglishReviews = posts.filter((post) => post.category === '전화영어 후기').slice(0, 3);
   const popular = [...posts].sort((a, b) => b.viewCount - a.viewCount).slice(0, 3);
 
   return (
@@ -227,6 +228,7 @@ function HomeView({
       </div>
 
       <PostPreview title="인기 글" posts={popular} emptyText="아직 인기 글이 없습니다." onMore={() => onNavigate('free')} />
+      <PostPreview title="전화영어 후기" posts={phoneEnglishReviews} emptyText="전화영어 수업 후기를 첫 번째로 남겨보세요." onMore={() => onNavigate('free')} />
       <PostPreview title="자유게시판 최신 글" posts={latestFree} emptyText="첫 자유 글을 남겨보세요." onMore={() => onNavigate('free')} />
       <PostPreview title="모여라 최신 글" posts={latestMeetup} emptyText="첫 모임 글을 남겨보세요." onMore={() => onNavigate('meetup')} />
     </section>

@@ -328,22 +328,24 @@ function seedResources() {
 }
 
 function seedPosts() {
-  const count = db.prepare('SELECT COUNT(*) AS count FROM posts').get().count;
-  if (count > 0) {
-    return;
-  }
-
   const now = new Date().toISOString();
   const insert = db.prepare(`
     INSERT INTO posts (board_type, category, title, content, author_name, password_hash, view_count, created_at, updated_at)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
   `);
+  const exists = db.prepare('SELECT id FROM posts WHERE title = ? LIMIT 1');
+
   [
     ['free', '질문', '전화 영어에서 자주 막히는 표현 공유해요', '예약 변경이나 일정 조율할 때 자연스러운 표현을 같이 모아봐요.', '관리자', 12],
+    ['free', '전화영어 후기', '첫 전화영어 수업 후기 남겨요', '10분 수업이라 부담이 적었고, 선생님이 제가 자주 틀리는 시제를 바로 잡아줘서 좋았어요. 다음에는 미리 말하고 싶은 문장을 적어두고 들어가보려고요.', '관리자', 18],
+    ['free', '전화영어 후기', '초보가 전화영어 시작할 때 느낀 점', '처음에는 침묵이 길어질까 봐 걱정했는데, 자기소개와 하루 일과처럼 익숙한 주제로 시작하니 훨씬 편했어요.', '관리자', 14],
     ['free', '자료공유', '쉐도잉할 때 한 문장만 반복하는 방식 추천', '긴 영상보다 10초짜리 문장을 여러 번 따라 하면 발음 교정에 도움이 됐어요.', '관리자', 8],
     ['meetup', '회화모임', '토요일 오전 온라인 회화 스터디 모집', '초중급 대상으로 30분 자유 대화, 30분 표현 복습을 진행하려고 합니다.', '관리자', 21],
     ['meetup', '과외', '비즈니스 이메일 첨삭 교환하실 분', '서로 쓴 이메일을 짧게 첨삭하고 표현을 정리해보면 좋겠어요.', '관리자', 15],
   ].forEach(([boardType, category, title, content, authorName, viewCount]) => {
+    if (exists.get(title)) {
+      return;
+    }
     insert.run(boardType, category, title, content, authorName, hashPassword('admin1234'), viewCount, now, now);
   });
 }

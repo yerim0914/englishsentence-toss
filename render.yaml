@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: englishsentence-ocr
+    name: englishsentence-toss-api
     runtime: node
     rootDir: ocr-server
     buildCommand: npm install
@@ -10,4 +10,17 @@ services:
       - key: NODE_VERSION
         value: 22.14.0
       - key: ALLOWED_ORIGIN
-        value: "*"
+        value: https://englishsentence-toss.onrender.com
+      - key: APP_TIME_ZONE
+        value: Asia/Seoul
+      - key: DATA_DIR
+        value: /tmp/englishsentence-data
+
+  - type: web
+    name: englishsentence-toss
+    runtime: static
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
+    envVars:
+      - key: VITE_API_BASE_URL
+        value: https://englishsentence-toss-api.onrender.com
